@@ -1,0 +1,6 @@
+name: "IntionProxy"
+api: "1.0.0"
+version: "1.0"
+main: com.intion.proxy.plugin.Loader
+author: "Intion"
+description: "Proxy Servers"
