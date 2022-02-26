@@ -6,6 +6,7 @@
 - It is possible to create basic plugins using javascript
 - Performance improvements and more packets to grab more data and further improve how servers communicate
 - NukkitRunnable or NukkitTask style loop/scheduler systems
+- Plugin embedded in same jar file
 
  > **Improvements**
 - I want to improve the plugin system further, adding the plugin possibility in .jar
