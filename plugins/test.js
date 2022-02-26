@@ -6,6 +6,11 @@ function onEnable()
     manager.createCommand("test", "commandTest");
 }
 
+function SessionCreateEvent(event)
+{
+    print(event.getSessionId());
+}
+
 function commandTest(values)
 {
     print("test work");
