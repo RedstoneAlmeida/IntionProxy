@@ -3,6 +3,7 @@ package com.intion.proxy;
 import com.intion.proxy.command.Command;
 import com.intion.proxy.command.CommandMap;
 import com.intion.proxy.command.defaults.*;
+import com.intion.proxy.event.session.SessionCreateEvent;
 import com.intion.proxy.microplugin.PluginLoader;
 import com.intion.proxy.network.Network;
 import com.intion.proxy.network.protocol.CommandPacket;
@@ -109,6 +110,10 @@ public class Loader {
                 Session session = new Session(this, sk);
                 long id = SessionID++;
                 session.setServerId(id);
+
+                SessionCreateEvent event = new SessionCreateEvent(session, id);
+                this.pluginLoader.getManager().callEvent(event);
+
                 this.sessions.put(id, session);
                 session.start();
             }

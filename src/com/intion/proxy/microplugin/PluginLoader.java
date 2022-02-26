@@ -3,9 +3,7 @@ package com.intion.proxy.microplugin;
 import com.intion.proxy.Loader;
 import com.intion.proxy.utils.Logger;
 
-import javax.script.Invocable;
-import javax.script.ScriptEngine;
-import javax.script.ScriptEngineManager;
+import javax.script.*;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStreamReader;
@@ -59,7 +57,7 @@ public class PluginLoader {
             if(file.isDirectory()) continue;
             if(file.getName().contains(".js")){
                 try (final Reader reader = new InputStreamReader(new FileInputStream(file))) {
-                    engine.eval(reader);
+                    engine.eval(reader, engine.getBindings(ScriptContext.ENGINE_SCOPE));
                     Logger.log("Loaded Script: " + file.getName());
                     this.checkPlugins(file.getName());
                 } catch (final Exception e) {
