@@ -14,5 +14,12 @@
 - More commands
 - More stable and more simplistic for easy setup
 
+ > **Commands**
+- Transfer, be like transfer with bonus. Use: "transfer RedstoneAlmeida ServerName 0.0.0.0 19133"
+- Stop, well... stopping proxy.
+- List, see all connected servers
+- Say, you send message to all servers, Use: "say example message"
+- Plugins, see all archives loaded, example: Loaded: test.js, test2.js... 
+
 *Well, welcome to a new connection system for nukkit.*
 
