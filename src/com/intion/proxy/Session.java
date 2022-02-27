@@ -1,5 +1,7 @@
 package com.intion.proxy;
 
+import com.intion.proxy.event.session.SessionDataPacketReceiveEvent;
+import com.intion.proxy.event.session.SessionDataPacketSendEvent;
 import com.intion.proxy.event.session.SessionDisconnectEvent;
 import com.intion.proxy.event.session.SessionInitializeEvent;
 import com.intion.proxy.event.session.player.PlayerConnectEvent;
@@ -27,9 +29,12 @@ public class Session extends Thread {
 
     private long serverId;
     private String name;
+    private InetSocketAddress address;
 
     private int maxPlayers = 20;
     private int playerCount = 0;
+
+    private boolean initialized = false;
 
     private Map<String, IntionPlayer> players = new HashMap<>();
 
@@ -59,7 +64,7 @@ public class Session extends Thread {
     @Override
     public void run() {
         try {
-            Logger.log("Server connected with " + String.format("%s | %s | ID: %s", socket.getInetAddress().getHostAddress(), socket.getPort(), this.serverId));
+            Logger.log("Server connected with " + String.format("%s:%s | ID: %s", socket.getInetAddress().getHostAddress(), socket.getPort(), this.serverId));
             while (true)
             {
                 if (!socket.isConnected()) return;
@@ -95,6 +100,12 @@ public class Session extends Thread {
 
     public void dataPacket(DataPacket packet)
     {
+        SessionDataPacketSendEvent event = new SessionDataPacketSendEvent(this, packet);
+        this.pluginLoader.getManager().callEvent(event);
+
+        if (event.isCancelled())
+            return;
+
         packet.encode();
         try {
             DataOutputStream saida = new DataOutputStream(this.socket.getOutputStream());
@@ -109,6 +120,12 @@ public class Session extends Thread {
 
     public void handlePacket(DataPacket packet)
     {
+        SessionDataPacketReceiveEvent event = new SessionDataPacketReceiveEvent(this, packet);
+        this.pluginLoader.getManager().callEvent(event);
+
+        if (event.isCancelled())
+            return;
+
         switch (packet.pid())
         {
             case ProtocolInfo.HANDLER_PACKET:
@@ -132,6 +149,9 @@ public class Session extends Thread {
 
                 this.maxPlayers = sessionInitializeEvent.getSlots();
                 this.name = sessionInitializeEvent.getServerName();
+                this.address = connectionPacket.address;
+
+                this.initialized = true;
 
                 Logger.log("ID: " + this.serverId + " -> fully connected, server name: " + this.name);
                 break;
@@ -154,7 +174,8 @@ public class Session extends Thread {
                 for (long id : sessions.keySet())
                 {
                     Session session = sessions.get(id);
-                    values[i] = String.format("%s,%s,%s,%s",
+                    values[i] = String.format("%s (%s),%s,%s,%s",
+                            session.getSessionName(),
                             session.getServerId(),
                             session.getSessionName(),
                             session.getPlayerCount(),
@@ -176,7 +197,10 @@ public class Session extends Thread {
                             this.pluginLoader.getManager().callEvent(playerConnectEvent);
                             this.players.put(playerDataPacket.xuid, player);
                         }
-                        Logger.log(String.format("%s connected to %s (%s)", playerDataPacket.username, this.serverId, this.getSessionName()));
+                        if (this.initialized)
+                            Logger.log(String.format("%s connected to %s (%s)", playerDataPacket.username, this.serverId, this.getSessionName()));
+                        else
+                            Logger.log(String.format("%s connected to %s (Unknown)", playerDataPacket.username, this.serverId));
                         break;
                     case PlayerDataPacket.PlayerDataType.DISCONNECT:
 
@@ -207,17 +231,17 @@ public class Session extends Thread {
         }
     }
 
-    private void disconnect()
+    public void disconnect()
     {
         this.disconnect("Unknown");
     }
 
-    private void disconnect(String reason)
+    public void disconnect(String reason)
     {
         this.disconnect(reason, true);
     }
 
-    private void disconnect(String reason, boolean send)
+    public void disconnect(String reason, boolean send)
     {
         DisconnectPacket packet = new DisconnectPacket();
         packet.serverId = this.serverId;
@@ -269,5 +293,13 @@ public class Session extends Thread {
 
     public String getSessionName() {
         return name;
+    }
+
+    public boolean isInitialized() {
+        return initialized;
+    }
+
+    public InetSocketAddress getServerAddress() {
+        return address;
     }
 }

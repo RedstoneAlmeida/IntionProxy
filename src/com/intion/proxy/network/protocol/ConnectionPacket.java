@@ -1,5 +1,7 @@
 package com.intion.proxy.network.protocol;
 
+import java.net.InetSocketAddress;
+
 /**
  * Created by ASUS on 19/02/2018.
  */
@@ -11,6 +13,8 @@ public class ConnectionPacket extends DataPacket {
     public String password;
     public int slots = 0;
 
+    public InetSocketAddress address;
+
     @Override
     public byte pid() {
         return NETWORK_ID;
@@ -21,6 +25,9 @@ public class ConnectionPacket extends DataPacket {
         this.name = this.getString();
         this.password = this.getString();
         this.slots = this.getInt();
+        String hostname = this.getString();
+        int port = this.getInt();
+        this.address = new InetSocketAddress(hostname, port);
     }
 
     @Override
@@ -28,6 +35,8 @@ public class ConnectionPacket extends DataPacket {
         this.putString(name);
         this.putString(password);
         this.putInt(slots);
+        this.putString(address.getHostName());
+        this.putInt(address.getPort());
     }
 
 }

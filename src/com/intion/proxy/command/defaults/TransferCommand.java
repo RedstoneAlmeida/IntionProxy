@@ -15,21 +15,29 @@ public class TransferCommand extends Command {
     }
 
     @Override
-    public void execute(Loader server, String[] args) {
-        if (args.length < 5)
+    public void execute(Loader loader, String[] args) {
+        if (args.length < 3)
             return;
         String playerName = args[1];
         String serverName = args[2];
-        String host = args[3];
+        Session server = loader.getSessionByName(serverName);
+        if (server == null)
+        {
+            Logger.log("Server by " + serverName + " is not found");
+            return;
+        }
         try {
-            int port = Integer.parseInt(args[4]);
-
-            for (Session session : server.getSessions().values())
+            for (Session session : loader.getSessions().values())
             {
+                if (!session.isInitialized())
+                    continue;
                 IntionPlayer player = session.getPlayerByName(playerName);
                 if (player != null)
                 {
-                    player.transfer(new InetSocketAddress(host, port), serverName);
+                    InetSocketAddress address = server.getServerAddress();
+                    if (address.getHostName().equalsIgnoreCase("0.0.0.0"))
+                        address = new InetSocketAddress(session.getSocket().getInetAddress().getHostAddress(), address.getPort());
+                    player.transfer(address, serverName);
                     break;
                 }
             }

@@ -8,6 +8,7 @@ import com.intion.proxy.utils.Logger;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
+import java.net.InetSocketAddress;
 import java.net.Socket;
 
 public class Session extends Thread {
@@ -40,6 +41,7 @@ public class Session extends Thread {
             pk.name = this.loader.getConfig().getString("name", "Unknown");
             pk.password = this.password;
             pk.slots = this.loader.getServer().getMaxPlayers();
+            pk.address = new InetSocketAddress(this.loader.getServer().getIp(), this.loader.getServer().getPort());
 
             this.dataPacket(pk);
 

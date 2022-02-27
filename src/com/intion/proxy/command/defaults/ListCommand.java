@@ -30,9 +30,12 @@ public class ListCommand extends Command {
         for (long id : sessions.keySet())
         {
             Session session = sessions.get(id);
-            String f = String.format("%s with %s:%s (%s/%s)", id
+            String f = String.format("%s (%s) with %s:%s [%s:%s] (%s/%s)", id
+                    , session.getSessionName()
                     , session.getSocket().getInetAddress().getHostAddress()
                     , session.getSocket().getPort()
+                    , session.getServerAddress().getHostName()
+                    , session.getServerAddress().getPort()
                     , session.getPlayerCount()
                     , session.getMaxPlayers());
             Logger.log(f);
