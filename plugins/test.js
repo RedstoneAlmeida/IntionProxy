@@ -8,7 +8,14 @@ function onEnable()
 
 function SessionCreateEvent(event)
 {
-    print(event.getSessionId());
+    // event.getSessionId() return SessionID
+    // event.getSession() return Session class
+}
+
+function SessionInitializeEvent(event)
+{
+    // event.setServerName(string) defines SessionName
+    // event.getSessionName()
 }
 
 function commandTest(values)

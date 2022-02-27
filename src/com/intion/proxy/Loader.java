@@ -3,6 +3,7 @@ package com.intion.proxy;
 import com.intion.proxy.command.Command;
 import com.intion.proxy.command.CommandMap;
 import com.intion.proxy.command.defaults.*;
+import com.intion.proxy.event.proxy.ProxyStartEvent;
 import com.intion.proxy.event.session.SessionCreateEvent;
 import com.intion.proxy.microplugin.PluginLoader;
 import com.intion.proxy.network.Network;
@@ -88,6 +89,9 @@ public class Loader {
                     e.printStackTrace();
                 }
             }).start();
+
+            ProxyStartEvent proxyStartEvent = new ProxyStartEvent(this);
+            this.pluginLoader.getManager().callEvent(proxyStartEvent);
 
             this.scheduler.addTask(new IntionTask(this.scheduler) {
                 @Override

@@ -1,11 +1,19 @@
 package com.intion.proxy;
 
+import com.intion.proxy.event.session.SessionDisconnectEvent;
+import com.intion.proxy.event.session.SessionInitializeEvent;
+import com.intion.proxy.event.session.player.PlayerConnectEvent;
+import com.intion.proxy.event.session.player.PlayerDisconnectEvent;
+import com.intion.proxy.event.session.player.PlayerTransferEvent;
+import com.intion.proxy.microplugin.PluginLoader;
 import com.intion.proxy.network.protocol.*;
 import com.intion.proxy.utils.Logger;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
+import java.net.InetAddress;
+import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.util.HashMap;
 import java.util.Map;
@@ -15,6 +23,7 @@ public class Session extends Thread {
 
     private Socket socket;
     private Loader loader;
+    private PluginLoader pluginLoader;
 
     private long serverId;
     private String name;
@@ -27,6 +36,7 @@ public class Session extends Thread {
     public Session(Loader loader, Socket socket)
     {
         this.loader = loader;
+        this.pluginLoader = loader.getPluginLoader();
         this.socket = socket;
     }
 
@@ -115,8 +125,15 @@ public class Session extends Thread {
                 confirmationPacket.serverId = this.serverId;
                 this.dataPacket(confirmationPacket);
 
-                this.maxPlayers = connectionPacket.slots;
-                this.name = connectionPacket.name;
+                InetAddress address = this.socket.getInetAddress();
+                InetSocketAddress inetSocketAddress = new InetSocketAddress(address.getHostName(), this.socket.getPort());
+                SessionInitializeEvent sessionInitializeEvent = new SessionInitializeEvent(this, connectionPacket.slots, connectionPacket.name, inetSocketAddress);
+                this.pluginLoader.getManager().callEvent(sessionInitializeEvent);
+
+                this.maxPlayers = sessionInitializeEvent.getSlots();
+                this.name = sessionInitializeEvent.getServerName();
+
+                Logger.log("ID: " + this.serverId + " -> fully connected, server name: " + this.name);
                 break;
             case ProtocolInfo.INFORMATION_PACKET:
                 InformationPacket informationPacket = (InformationPacket) packet;
@@ -153,14 +170,35 @@ public class Session extends Thread {
                 {
                     case PlayerDataPacket.PlayerDataType.CONNECT:
                         if (!this.players.containsKey(playerDataPacket.xuid))
-                            this.players.put(playerDataPacket.xuid, new IntionPlayer(this, playerDataPacket.username, playerDataPacket.xuid));
-                        Logger.log(String.format("%s connected to %s", playerDataPacket.username, this.serverId));
+                        {
+                            IntionPlayer player = new IntionPlayer(this, playerDataPacket.username, playerDataPacket.xuid);
+                            PlayerConnectEvent playerConnectEvent = new PlayerConnectEvent(this, player);
+                            this.pluginLoader.getManager().callEvent(playerConnectEvent);
+                            this.players.put(playerDataPacket.xuid, player);
+                        }
+                        Logger.log(String.format("%s connected to %s (%s)", playerDataPacket.username, this.serverId, this.getSessionName()));
                         break;
                     case PlayerDataPacket.PlayerDataType.DISCONNECT:
-                        this.players.remove(playerDataPacket.xuid);
+
+                        if (this.players.containsKey(playerDataPacket.xuid))
+                        {
+                            this.players.remove(playerDataPacket.xuid);
+                            IntionPlayer player = this.players.get(playerDataPacket.xuid);
+
+                            PlayerDisconnectEvent playerDisconnectEvent = new PlayerDisconnectEvent(this, player);
+                            this.pluginLoader.getManager().callEvent(playerDisconnectEvent);
+                        }
                         Logger.log(String.format("%s disconnect from %s", playerDataPacket.username, this.serverId));
                         break;
                     case PlayerDataPacket.PlayerDataType.CHANGE_SERVER:
+                        if (this.players.containsKey(playerDataPacket.xuid))
+                        {
+                            this.players.remove(playerDataPacket.xuid);
+                            IntionPlayer player = this.players.get(playerDataPacket.xuid);
+
+                            PlayerTransferEvent playerTransferEvent = new PlayerTransferEvent(this, player);
+                            this.pluginLoader.getManager().callEvent(playerTransferEvent);
+                        }
                         Logger.log(String.format("%s transferred from %s to %s", playerDataPacket.username, this.name,
                                 playerDataPacket.serverName));
                         break;
@@ -188,6 +226,10 @@ public class Session extends Thread {
         if (send) {
             this.dataPacket(packet);
         }
+
+        SessionDisconnectEvent disconnectEvent = new SessionDisconnectEvent(this, reason);
+        this.pluginLoader.getManager().callEvent(disconnectEvent);
+
         this.loader.removeSession(this.serverId);
     }
 
