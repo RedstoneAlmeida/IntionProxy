@@ -33,12 +33,7 @@ public class PluginManager {
 
     public void createTask(String function, int delay, boolean repeat)
     {
-        IntionTask task = new IntionTask(this.plugin.getScheduler()) {
-            @Override
-            public void onRun() {
-                plugin.getPluginLoader().call(function);
-            }
-        };
+        PluginTask task = new PluginTask(this.getPlugin().getScheduler(), function);
         this.plugin.getScheduler().addTask(task, delay, repeat);
     }
 

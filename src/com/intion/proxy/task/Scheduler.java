@@ -4,6 +4,7 @@ import com.intion.proxy.Loader;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class Scheduler {
 
@@ -11,7 +12,7 @@ public class Scheduler {
 
     public static long TaskID = -1;
 
-    private Map<Long, IntionTask> queue = new LinkedHashMap<>();
+    private Map<Long, IntionTask> queue = new ConcurrentHashMap<>();
 
     public Scheduler(Loader loader)
     {

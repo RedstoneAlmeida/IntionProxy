@@ -4,6 +4,13 @@ var version = "0.0.1";
 function onEnable()
 {
     manager.createCommand("test", "commandTest");
+    manager.createTask("repeat", 5, true); // loop
+}
+
+function repeat(task)
+{
+    task.cancel();
+    print("I am loop")
 }
 
 function SessionCreateEvent(event)
@@ -23,10 +30,6 @@ function commandTest(values)
     print("test work");
 }
 
-function eventCommand(command)
-{
-    return true;
-}
 
 function getName() {
     return this.name;

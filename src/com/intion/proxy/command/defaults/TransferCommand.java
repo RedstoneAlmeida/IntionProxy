@@ -38,12 +38,13 @@ public class TransferCommand extends Command {
                     if (address.getHostName().equalsIgnoreCase("0.0.0.0"))
                         address = new InetSocketAddress(session.getSocket().getInetAddress().getHostAddress(), address.getPort());
                     player.transfer(address, serverName);
-                    break;
+                    return;
                 }
             }
+            Logger.log("Not found " + playerName + " in server list");
         } catch (Exception e)
         {
-            Logger.log("Erro: definição de porta invalido");
+            e.printStackTrace();
         }
     }
 }
