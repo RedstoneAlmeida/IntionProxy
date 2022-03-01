@@ -42,7 +42,7 @@ public class CommandMap {
 
             Object a = this.plugin.getPluginLoader().call("eventCommand", command);
 
-            if (a != null) {
+            if (a instanceof Boolean) {
                 boolean value = (boolean) a;
                 if (!value) {
                     return;

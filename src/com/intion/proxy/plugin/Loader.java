@@ -4,6 +4,7 @@ import cn.nukkit.Player;
 import cn.nukkit.event.EventHandler;
 import cn.nukkit.event.Listener;
 import cn.nukkit.event.player.PlayerLoginEvent;
+import cn.nukkit.event.player.PlayerQuitEvent;
 import cn.nukkit.plugin.PluginBase;
 import com.intion.proxy.network.Network;
 import com.intion.proxy.network.protocol.PlayerDataPacket;
@@ -38,6 +39,18 @@ public class Loader extends PluginBase implements Listener {
         Player player = event.getPlayer();
         PlayerDataPacket packet = new PlayerDataPacket();
         packet.type = PlayerDataPacket.PlayerDataType.CONNECT;
+        packet.xuid = player.getLoginChainData().getXUID();
+        packet.username = player.getName();
+        packet.serverName = this.getConfig().getString("name", "Unknown");
+        this.session.sendPacket(packet);
+    }
+
+    @EventHandler
+    public void onPlayerQuit(PlayerQuitEvent event)
+    {
+        Player player = event.getPlayer();
+        PlayerDataPacket packet = new PlayerDataPacket();
+        packet.type = PlayerDataPacket.PlayerDataType.DISCONNECT;
         packet.xuid = player.getLoginChainData().getXUID();
         packet.username = player.getName();
         packet.serverName = this.getConfig().getString("name", "Unknown");

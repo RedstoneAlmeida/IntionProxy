@@ -10,6 +10,9 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.Socket;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ConcurrentLinkedQueue;
 
 public class Session extends Thread {
 
@@ -21,6 +24,8 @@ public class Session extends Thread {
     private int port;
 
     private int tries = 0;
+
+    private ConcurrentLinkedQueue<DataPacket> queue = new ConcurrentLinkedQueue<>();
 
     public Session(Loader loader, String address, int port, String password)
     {
@@ -61,6 +66,12 @@ public class Session extends Thread {
                 packet.decode();
 
                 this.handlePacket(packet);
+
+                if (!this.queue.isEmpty())
+                {
+                    DataPacket dataPacket = this.queue.poll();
+                    this.dataPacket(dataPacket);
+                }
             }
         } catch (IOException e) {
             if (e.getMessage().contains("Socket is closed"))
@@ -111,6 +122,16 @@ public class Session extends Thread {
 
     public void sendPacket(DataPacket packet)
     {
+        this.sendPacket(packet, false);
+    }
+
+    public void sendPacket(DataPacket packet, boolean async)
+    {
+        if (async)
+        {
+            this.queue.add(packet);
+            return;
+        }
         try {
             this.dataPacket(packet);
         } catch (IOException e)

@@ -4,13 +4,11 @@ import com.intion.proxy.Loader;
 import com.intion.proxy.utils.Logger;
 
 import javax.script.*;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.InputStreamReader;
-import java.io.Reader;
+import java.io.*;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 public class PluginLoader {
 
@@ -27,6 +25,8 @@ public class PluginLoader {
         final ScriptEngineManager manager = new ScriptEngineManager();
         this.engine = manager.getEngineByMimeType("text/javascript");
         this.manager = new PluginManager(loader);
+
+        System.out.println(manager.getEngineFactories());
     }
 
     public PluginManager getManager() {
@@ -57,6 +57,23 @@ public class PluginLoader {
             if(file.isDirectory()) continue;
             if(file.getName().contains(".js")){
                 try (final Reader reader = new InputStreamReader(new FileInputStream(file))) {
+                    BufferedReader bufferedReader = new BufferedReader(reader);
+                    boolean bypassName = false;
+                    boolean bypassVersion = false;
+                    for (String line : bufferedReader.lines().collect(Collectors.toList()))
+                    {
+                        if (line.contains("getName()"))
+                            bypassName = true;
+                        if (line.contains("getVersion()"))
+                            bypassVersion = true;
+
+                        if (bypassName && bypassVersion) break;
+                    }
+                    if (!bypassName || !bypassVersion)
+                    {
+                        Logger.log("Could not load " + file.getName() + " not found name and version");
+                        continue;
+                    }
                     engine.eval(reader, engine.getBindings(ScriptContext.ENGINE_SCOPE));
                     Logger.log("Loaded Script: " + file.getName());
                     this.checkPlugins(file.getName());

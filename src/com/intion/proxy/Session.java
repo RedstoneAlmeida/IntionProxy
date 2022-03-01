@@ -203,7 +203,6 @@ public class Session extends Thread {
                             Logger.log(String.format("%s connected to %s (Unknown)", playerDataPacket.username, this.serverId));
                         break;
                     case PlayerDataPacket.PlayerDataType.DISCONNECT:
-
                         if (this.players.containsKey(playerDataPacket.xuid))
                         {
                             this.players.remove(playerDataPacket.xuid);
@@ -278,9 +277,7 @@ public class Session extends Thread {
 
     public IntionPlayer getPlayerByUUID(String uuid)
     {
-        if (this.players.containsKey(uuid))
-            return this.players.get(uuid);
-        return null;
+        return this.players.getOrDefault(uuid, null);
     }
 
     public int getMaxPlayers() {

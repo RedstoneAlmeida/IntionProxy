@@ -16,4 +16,5 @@ public class PluginTask extends IntionTask {
     public void onRun() {
         this.getScheduler().getLoader().getPluginLoader().call(this.function, this);
     }
+
 }
