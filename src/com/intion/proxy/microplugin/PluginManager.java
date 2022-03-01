@@ -3,6 +3,7 @@ package com.intion.proxy.microplugin;
 import com.intion.proxy.Loader;
 import com.intion.proxy.command.Command;
 import com.intion.proxy.event.ProxyEvent;
+import com.intion.proxy.event.session.SessionInitializeEvent;
 import com.intion.proxy.task.IntionTask;
 import com.intion.proxy.utils.Logger;
 
@@ -39,7 +40,7 @@ public class PluginManager {
 
     public void callEvent(ProxyEvent event)
     {
-        this.plugin.getPluginLoader().call(event.getEventName(), event);
+        this.plugin.getPluginLoader().call(event.getClass().getSimpleName(), event);
     }
 
     public Loader getPlugin() {

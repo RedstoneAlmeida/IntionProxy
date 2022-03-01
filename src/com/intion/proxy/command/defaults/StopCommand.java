@@ -10,30 +10,20 @@ import java.util.Objects;
 
 public class StopCommand extends Command {
 
-    private Loader loader;
-    private boolean all;
-
-    public StopCommand()
-    {
-        this(false, null);
-    }
-
-    public StopCommand(boolean all, Loader loader){
+    public StopCommand(){
         this.setName("stop");
-        this.all = all;
-        this.loader = loader;
     }
 
     @Override
-    public void execute(Loader server) {
+    public void execute(Loader server, String[] args) {
         System.out.println("Stopping Proxy");
-        if (this.all)
+        if (args.length == 2 && args[1].equalsIgnoreCase("all"))
         {
             System.out.println("Stopping all servers connected with Proxy");
             CommandPacket pk = new CommandPacket();
             pk.command = "stop";
             pk.all = true;
-            for (Session session : loader.getSessions().values())
+            for (Session session : server.getSessions().values())
             {
                 session.dataPacket(pk);
             }

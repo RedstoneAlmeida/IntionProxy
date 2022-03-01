@@ -289,6 +289,8 @@ public class Session extends Thread {
     }
 
     public String getSessionName() {
+        if (name == null)
+            return "Unknown";
         return name;
     }
 
@@ -297,6 +299,19 @@ public class Session extends Thread {
     }
 
     public InetSocketAddress getServerAddress() {
+        if (address.getHostName().equalsIgnoreCase("0.0.0.0"))
+            return new InetSocketAddress(this.socket.getInetAddress().getHostAddress(), address.getPort());
         return address;
+    }
+
+    @Override
+    public String toString() {
+        return "Session{" +
+                "serverId=" + serverId +
+                ", name='" + name + '\'' +
+                ", maxPlayers=" + maxPlayers +
+                ", playerCount=" + playerCount +
+                ", initialized=" + initialized +
+                '}';
     }
 }

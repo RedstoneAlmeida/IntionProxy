@@ -25,8 +25,6 @@ public class PluginLoader {
         final ScriptEngineManager manager = new ScriptEngineManager();
         this.engine = manager.getEngineByMimeType("text/javascript");
         this.manager = new PluginManager(loader);
-
-        System.out.println(manager.getEngineFactories());
     }
 
     public PluginManager getManager() {
@@ -57,7 +55,7 @@ public class PluginLoader {
             if(file.isDirectory()) continue;
             if(file.getName().contains(".js")){
                 try (final Reader reader = new InputStreamReader(new FileInputStream(file))) {
-                    BufferedReader bufferedReader = new BufferedReader(reader);
+                    /*BufferedReader bufferedReader = new BufferedReader(reader);
                     boolean bypassName = false;
                     boolean bypassVersion = false;
                     for (String line : bufferedReader.lines().collect(Collectors.toList()))
@@ -73,8 +71,8 @@ public class PluginLoader {
                     {
                         Logger.log("Could not load " + file.getName() + " not found name and version");
                         continue;
-                    }
-                    engine.eval(reader, engine.getBindings(ScriptContext.ENGINE_SCOPE));
+                    }*/
+                    engine.eval(reader);
                     Logger.log("Loaded Script: " + file.getName());
                     this.checkPlugins(file.getName());
                 } catch (final Exception e) {
