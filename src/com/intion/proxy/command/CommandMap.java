@@ -54,7 +54,9 @@ public class CommandMap {
                 return;
             }
             command.execute(plugin, list.toArray(new String[split.length - 1]));
+            return;
         }
+        Logger.log("Not found '" + first + "' command");
     }
 
     public Map<String, Command> getCommands() {

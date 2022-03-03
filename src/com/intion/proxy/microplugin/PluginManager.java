@@ -10,10 +10,12 @@ import com.intion.proxy.utils.Logger;
 public class PluginManager {
 
     private Loader plugin;
+    private PluginLoader.PluginEntry entry;
 
-    public PluginManager(Loader plugin)
+    public PluginManager(Loader plugin, PluginLoader.PluginEntry entry)
     {
         this.plugin = plugin;
+        this.entry = entry;
     }
 
     public void createCommand(String command, String function)
@@ -26,7 +28,10 @@ public class PluginManager {
 
             @Override
             public void execute(Loader server, String[] args) {
-                server.getPluginLoader().call(function, (Object[]) args);
+                if (entry != null)
+                    server.getPluginLoader().call(entry, function, (Object[]) args);
+                else
+                    server.getPluginLoader().call(function, (Object[]) args);
             }
         };
         this.plugin.getCommandMap().registerCommand(command, cmd);
@@ -34,7 +39,7 @@ public class PluginManager {
 
     public void createTask(String function, int delay, boolean repeat)
     {
-        PluginTask task = new PluginTask(this.getPlugin().getScheduler(), function);
+        PluginTask task = new PluginTask(this.getPlugin().getScheduler(), function, this.entry);
         this.plugin.getScheduler().addTask(task, delay, repeat);
     }
 

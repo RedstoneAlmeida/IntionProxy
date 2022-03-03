@@ -12,9 +12,11 @@ import com.intion.proxy.network.protocol.DataPacket;
 import com.intion.proxy.network.protocol.InformationPacket;
 import com.intion.proxy.task.IntionTask;
 import com.intion.proxy.task.Scheduler;
+import com.intion.proxy.utils.IntionConfig;
 import com.intion.proxy.utils.Logger;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.InetSocketAddress;
@@ -36,6 +38,8 @@ public class Loader {
     private PluginLoader pluginLoader;
 
     private CommandMap commandMap;
+
+    private IntionConfig config;
 
     /**
      * Credentials
@@ -63,7 +67,17 @@ public class Loader {
     {
         Thread.currentThread().setName("Server Thread");
         Logger.log("Loading....");
+        new File(PLUGIN_PATH).mkdir();
         try {
+            this.config = new IntionConfig("proxy.properties");
+            if (this.config.exist("server-password"))
+                this.token = (String) this.config.get("server-password");
+            else
+            {
+                this.config.put("server-password", "Intion@123");
+                this.config.save();
+                this.token = "Intion@123";
+            }
             ServerSocket socket = new ServerSocket();
             socket.bind(new InetSocketAddress("0.0.0.0", this.port));
             this.network = new Network();

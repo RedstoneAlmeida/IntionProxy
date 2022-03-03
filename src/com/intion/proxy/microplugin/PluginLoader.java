@@ -24,7 +24,7 @@ public class PluginLoader {
 
         final ScriptEngineManager manager = new ScriptEngineManager();
         this.engine = manager.getEngineByMimeType("text/javascript");
-        this.manager = new PluginManager(loader);
+        this.manager = new PluginManager(loader, null);
     }
 
     public PluginManager getManager() {
@@ -87,6 +87,13 @@ public class PluginLoader {
         return null;
     }
 
+    public synchronized Object call(PluginEntry entry, String functionName, Object... args)
+    {
+        if (this.plugins.containsKey(entry.getName()))
+            return entry.call(functionName, args);
+        return null;
+    }
+
     public Map<String, PluginEntry> getPlugins() {
         return plugins;
     }
@@ -112,7 +119,7 @@ public class PluginLoader {
 
             final ScriptEngineManager manager = new ScriptEngineManager();
             this.engine = manager.getEngineByMimeType("text/javascript");
-            this.manager = new PluginManager(loader);
+            this.manager = new PluginManager(loader, this);
 
             engine.put("loader", loader);
             engine.put("scheduler", loader.getScheduler());
