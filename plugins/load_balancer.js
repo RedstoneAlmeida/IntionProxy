@@ -20,12 +20,21 @@ function SessionCreateEvent(event)
 function SessionInitializeEvent(event)
 {
     var serverName = event.getServerName();
+    var session = event.getSession();
     print(serverName);
     if (serverName.startsWith("Lobby"))
     {
-        lobbySessions[event.getSession().getServerId()] = event.getSession();
+        lobbySessions[session.getServerId()] = session;
     }
-    print(lobbySessions);
+}
+
+function SessionDisconnectEvent(event)
+{
+    var session = event.getSession();
+    if (lobbySessions[session.getServerId()] != null)
+    {
+        lobbySessions.splice(session.getServerId(), 1);
+    }
 }
 
 function PlayerConnectEvent(event)

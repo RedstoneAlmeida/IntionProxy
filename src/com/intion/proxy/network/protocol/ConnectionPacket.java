@@ -39,4 +39,14 @@ public class ConnectionPacket extends DataPacket {
         this.putInt(address.getPort());
     }
 
+    public static ConnectionPacket create(String name, String password, int slots, InetSocketAddress address)
+    {
+        ConnectionPacket packet = new ConnectionPacket();
+        packet.name = name;
+        packet.password = password;
+        packet.slots = slots;
+        packet.address = address;
+        return packet;
+    }
+
 }

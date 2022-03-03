@@ -47,15 +47,12 @@ public class PluginLoader {
         File dir = new File(Loader.PLUGIN_PATH);
         dir.mkdir();
 
-        engine.put("loader", this.loader);
-        engine.put("scheduler", this.loader.getScheduler());
-        engine.put("manager", this.manager);
-
         for (File file : Objects.requireNonNull(dir.listFiles())) {
             if(file.isDirectory()) continue;
             if(file.getName().contains(".js")){
                 try (final Reader reader = new InputStreamReader(new FileInputStream(file))) {
-                    /*BufferedReader bufferedReader = new BufferedReader(reader);
+                    Reader fileReader = new InputStreamReader(new FileInputStream(file));
+                    BufferedReader bufferedReader = new BufferedReader(reader);
                     boolean bypassName = false;
                     boolean bypassVersion = false;
                     for (String line : bufferedReader.lines().collect(Collectors.toList()))
@@ -71,39 +68,21 @@ public class PluginLoader {
                     {
                         Logger.log("Could not load " + file.getName() + " not found name and version");
                         continue;
-                    }*/
-                    engine.eval(reader);
-                    Logger.log("Loaded Script: " + file.getName());
-                    this.checkPlugins(file.getName());
+                    }
+                    PluginEntry entry = new PluginEntry(fileReader, file.getName(), loader);
+                    if (entry.isReady())
+                        this.plugins.put(entry.getName(), entry);
                 } catch (final Exception e) {
                     Logger.log("Could not load " + file.getName(), e);
                 }
             }
         }
-
-        this.call("onEnable");
-    }
-
-    public void checkPlugins(String filename)
-    {
-        Object name = this.call("getName");
-        if (name == null)
-            return;
-        Object version = this.call("getVersion");
-        if (version == null)
-            return;
-        this.plugins.put(name.toString(), new PluginEntry(name.toString(), version.toString(), filename));
     }
 
     public synchronized Object call(String functionName, Object... args){
-        if(engine.get(functionName) == null){
-            return null;
-        }
-        try {
-            return ((Invocable) engine).invokeFunction(functionName, args);
-        } catch (final Exception se) {
-            Logger.log("Error while calling " + functionName, se);
-            se.printStackTrace();
+        for (PluginEntry entry : this.plugins.values())
+        {
+            entry.call(functionName, args);
         }
         return null;
     }
@@ -122,10 +101,57 @@ public class PluginLoader {
         private String version;
         private String filename;
 
-        public PluginEntry(String name, String version, String filename) {
-            this.name = name;
-            this.version = version;
+        private PluginManager manager;
+
+        private ScriptEngine engine;
+
+        private boolean ready = false;
+
+        public PluginEntry(Reader reader, String filename, Loader loader) {
             this.filename = filename;
+
+            final ScriptEngineManager manager = new ScriptEngineManager();
+            this.engine = manager.getEngineByMimeType("text/javascript");
+            this.manager = new PluginManager(loader);
+
+            engine.put("loader", loader);
+            engine.put("scheduler", loader.getScheduler());
+            engine.put("manager", this.manager);
+
+            try {
+                engine.eval(reader, engine.getBindings(ScriptContext.ENGINE_SCOPE));
+            } catch (ScriptException e) {
+                e.printStackTrace();
+            }
+
+            this.name = (String) this.call("getName");
+            this.version = (String) this.call("getVersion");
+
+            if (name == null || version == null)
+            {
+                return;
+            }
+            this.ready = true;
+
+            Logger.log("Loaded plugin " + this.name);
+            this.call("onEnable");
+        }
+
+        public boolean isReady() {
+            return ready;
+        }
+
+        public synchronized Object call(String functionName, Object... args){
+            if(engine.get(functionName) == null){
+                return null;
+            }
+            try {
+                return ((Invocable) engine).invokeFunction(functionName, args);
+            } catch (final Exception se) {
+                Logger.log("Error while calling " + functionName, se);
+                se.printStackTrace();
+            }
+            return null;
         }
 
         public String getName() {

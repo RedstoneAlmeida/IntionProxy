@@ -42,11 +42,12 @@ public class Session extends Thread {
             this.socket = new Socket(this.address, this.port);
             this.loader.getLogger().info("§6Connected with proxy");
 
-            ConnectionPacket pk = new ConnectionPacket();
-            pk.name = this.loader.getConfig().getString("name", "Unknown");
-            pk.password = this.password;
-            pk.slots = this.loader.getServer().getMaxPlayers();
-            pk.address = new InetSocketAddress(this.loader.getServer().getIp(), this.loader.getServer().getPort());
+            ConnectionPacket pk = ConnectionPacket.create(
+                    this.loader.getConfig().getString("name", "Unknown"),
+                    this.password,
+                    this.loader.getServer().getMaxPlayers(),
+                    new InetSocketAddress(this.loader.getServer().getIp(), this.loader.getServer().getPort())
+            );
 
             this.dataPacket(pk);
 

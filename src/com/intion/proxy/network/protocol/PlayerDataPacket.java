@@ -33,6 +33,16 @@ public class PlayerDataPacket extends DataPacket{
         this.putString(this.serverName);
     }
 
+    public static PlayerDataPacket create(String username, String xuid, String serverName, int type)
+    {
+        PlayerDataPacket packet = new PlayerDataPacket();
+        packet.username = username;
+        packet.xuid = xuid;
+        packet.serverName = serverName;
+        packet.type = type;
+        return packet;
+    }
+
     public interface PlayerDataType {
 
         int CONNECT = 0;
