@@ -45,6 +45,7 @@ public class Network {
         this.registerPacket(ProtocolInfo.LIST_PACKET, ListPacket.class);
         this.registerPacket(ProtocolInfo.PLAYER_DATA_PACKET, PlayerDataPacket.class);
         this.registerPacket(ProtocolInfo.TRANSFER_PACKET, TransferPacket.class);
+        this.registerPacket(ProtocolInfo.PING_PACKET, PingPacket.class);
     }
 
 }

@@ -196,6 +196,16 @@ public class Session extends Thread {
                 this.sendPacket(playerDataPacket);
                 player.transfer(transferPacket.address);
                 break;
+            case ProtocolInfo.PING_PACKET:
+                PingPacket pingPacket = (PingPacket) packet;
+                if (pingPacket.type == PingPacket.SEND_SESSION)
+                {
+                    this.sendPacket(
+                            PingPacket.create(pingPacket.timeStamp, System.currentTimeMillis(), PingPacket.SEND_PROXY),
+                            true
+                    );
+                }
+                break;
         }
     }
 

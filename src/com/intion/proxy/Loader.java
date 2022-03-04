@@ -30,6 +30,7 @@ public class Loader {
     public static final String PATH = System.getProperty("user.dir") + "/";
     public static final String DATA_PATH = System.getProperty("user.dir") + "/";
     public static final String PLUGIN_PATH = DATA_PATH + "plugins";
+    public static final long START_TIME = System.currentTimeMillis();
 
     public static long SessionID = 0L;
 
@@ -167,6 +168,8 @@ public class Loader {
     public void registerCommands()
     {
         this.commandMap.registerCommand("StopCommand", new StopCommand());
+        this.commandMap.registerCommand("StatusCommand", new StatusCommand());
+        this.commandMap.registerCommand("PingCommand", new PingCommand());
         this.commandMap.registerCommand("ListCommand", new ListCommand());
         this.commandMap.registerCommand("PluginsCommand", new PluginsCommand());
         this.commandMap.registerCommand("SayCommand", new SayCommand());

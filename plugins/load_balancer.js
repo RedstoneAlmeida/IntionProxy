@@ -45,12 +45,15 @@ function PlayerConnectEvent(event)
         return;
     if (lobbySessions[session.getServerId()] != null)
     {
+        var breaked = false;
         lobbySessions.forEach(function (server) {
+            if (breaked)
+                return;
             if (server.getPlayerCount() < media)
             {
                 transferedPlayers[player.getXuid()] = player;
                 player.transfer(server.getServerAddress(), server.getSessionName());
-                return;
+                breaked = true;
             }
         });
     }
