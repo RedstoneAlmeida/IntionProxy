@@ -224,6 +224,14 @@ public class Session extends Thread {
                         break;
                 }
                 break;
+            case ProtocolInfo.PING_PACKET:
+                PingPacket pingPacket = (PingPacket) packet;
+                if (pingPacket.type == PingPacket.SEND_PROXY) {
+                    long ms = pingPacket.sessionStamp - pingPacket.timeStamp;
+                    Logger.log(String.format("%s (%s) ping is %s ms",
+                            this.getSessionName(), this.getServerId(), ms));
+                }
+                break;
         }
     }
 

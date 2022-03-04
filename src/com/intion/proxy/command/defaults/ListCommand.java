@@ -39,7 +39,7 @@ public class ListCommand extends Command {
                     , session.getSessionName()
                     , session.getSocket().getInetAddress().getHostAddress()
                     , session.getSocket().getPort()
-                    , session.getServerAddress().getHostName()
+                    , session.getServerAddress().getAddress().getHostAddress()
                     , session.getServerAddress().getPort()
                     , session.getPlayerCount()
                     , session.getMaxPlayers());

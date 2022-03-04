@@ -20,8 +20,8 @@ function onPlayerList(values)
         if (info === "")
             print(session.getSessionName() + " - Empty");
         else
-            print(session.getSessionName() + " - " + info)
-    })
+            print(session.getSessionName() + " - " + info);
+    });
 }
 
 
