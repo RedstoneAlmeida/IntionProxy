@@ -206,6 +206,17 @@ public class Session extends Thread {
                     );
                 }
                 break;
+            case ProtocolInfo.PLAYER_CLOSE_PACKET:
+                PlayerClosePacket playerClosePacket = (PlayerClosePacket) packet;
+                Player p = this.loader.getServer().getPlayer(playerClosePacket.playerName);
+                if (p != null)
+                {
+                    String reason = playerClosePacket.reason;
+                    cn.nukkit.network.protocol.DisconnectPacket dc = new cn.nukkit.network.protocol.DisconnectPacket();
+                    dc.message = reason;
+                    p.dataPacket(dc);
+                }
+                break;
         }
     }
 

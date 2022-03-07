@@ -14,5 +14,6 @@ public interface ProtocolInfo {
     byte STORE_DATA_PACKET = 0x10;
     byte TRANSFER_PACKET = 0x11;
     byte PING_PACKET = 0x12;
+    byte PLAYER_CLOSE_PACKET = 0x13;
 
 }

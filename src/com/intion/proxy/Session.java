@@ -1,11 +1,13 @@
 package com.intion.proxy;
 
+import cn.nukkit.Player;
 import com.intion.proxy.event.session.*;
 import com.intion.proxy.event.session.player.PlayerConnectEvent;
 import com.intion.proxy.event.session.player.PlayerDisconnectEvent;
 import com.intion.proxy.event.session.player.PlayerTransferEvent;
 import com.intion.proxy.microplugin.PluginLoader;
 import com.intion.proxy.network.protocol.*;
+import com.intion.proxy.task.IntionTask;
 import com.intion.proxy.utils.Logger;
 
 import java.io.DataInputStream;
@@ -190,9 +192,20 @@ public class Session extends Thread {
                         if (!this.players.containsKey(playerDataPacket.xuid))
                         {
                             IntionPlayer player = new IntionPlayer(this, playerDataPacket.username, playerDataPacket.xuid);
-                            PlayerConnectEvent playerConnectEvent = new PlayerConnectEvent(this, player);
-                            this.pluginLoader.getManager().callEvent(playerConnectEvent);
-                            this.players.put(playerDataPacket.xuid, player);
+                            if (!player.isBanned())
+                            {
+                                PlayerConnectEvent playerConnectEvent = new PlayerConnectEvent(this, player);
+                                this.pluginLoader.getManager().callEvent(playerConnectEvent);
+                                this.players.put(playerDataPacket.xuid, player);
+                            } else {
+                                this.loader.getScheduler().addTask(new IntionTask(this.loader.getScheduler()) {
+                                    @Override
+                                    public void onRun() {
+                                        player.close("You are banned");
+                                    }
+                                }, 5);
+                                return;
+                            }
                         }
                         if (this.initialized)
                             Logger.log(String.format("%s connected to %s (%s)", playerDataPacket.username, this.serverId, this.getSessionName()));

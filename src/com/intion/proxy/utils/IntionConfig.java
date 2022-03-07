@@ -65,13 +65,18 @@ public class IntionConfig {
         StringBuilder builder = new StringBuilder();
         for (String key : this.map.keySet())
         {
-            builder.append(key).append("=").append(this.map.get(key).toString());
+            builder.append(key).append("=").append(this.map.get(key).toString()).append("\n");
         }
         try {
             IntionConfig.writeFile(this.file, builder.toString());
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    public void remove(String key)
+    {
+        this.map.remove(key);
     }
 
     public static void writeFile(String fileName, String content) throws IOException {

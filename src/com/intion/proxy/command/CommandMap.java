@@ -25,6 +25,7 @@ public class CommandMap {
     {
         this.commandMap.put(prefix, command);
         this.commands.put(command.getName().replace("/", ""), command);
+        command.init(this.plugin);
     }
 
     public void execute(String line)

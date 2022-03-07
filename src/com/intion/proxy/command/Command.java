@@ -14,6 +14,11 @@ public abstract class Command {
         return name;
     }
 
+    public void init(Loader server)
+    {
+
+    }
+
     public void execute(Loader server)
     {
         this.execute(server, new String[0]);

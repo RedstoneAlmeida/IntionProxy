@@ -41,6 +41,7 @@ public class Loader {
     private CommandMap commandMap;
 
     private IntionConfig config;
+    private IntionConfig banConfig;
 
     /**
      * Credentials
@@ -79,6 +80,7 @@ public class Loader {
                 this.config.save();
                 this.token = "Intion@123";
             }
+            this.banConfig = new IntionConfig("bans.properties");
             ServerSocket socket = new ServerSocket();
             socket.bind(new InetSocketAddress("0.0.0.0", this.port));
             this.network = new Network();
@@ -175,6 +177,9 @@ public class Loader {
         this.commandMap.registerCommand("SayCommand", new SayCommand());
         this.commandMap.registerCommand("TransferCommand", new TransferCommand());
         this.commandMap.registerCommand("HelpCommand", new HelpCommand());
+        this.commandMap.registerCommand("KickCommand", new KickCommand());
+        this.commandMap.registerCommand("BanCommand", new BanCommand());
+        this.commandMap.registerCommand("UnBanCommand", new UnbanCommand());
     }
 
     public Network getNetwork() {
@@ -214,5 +219,9 @@ public class Loader {
 
     public PluginLoader getPluginLoader() {
         return pluginLoader;
+    }
+
+    public IntionConfig getBanConfig() {
+        return banConfig;
     }
 }
