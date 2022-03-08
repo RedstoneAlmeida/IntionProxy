@@ -15,7 +15,18 @@ public class IntionConfig {
 
     public IntionConfig(String filename)
     {
-        this.file = new File(Loader.DATA_PATH + "/" + filename);
+        this(filename, false);
+    }
+
+    public IntionConfig(String filename, boolean data)
+    {
+        if (data)
+        {
+            new File(Loader.PLUGIN_PATH + "/data/").mkdirs();
+            this.file = new File(Loader.PLUGIN_PATH + "/data" + "/" + filename);
+        } else {
+            this.file = new File(Loader.DATA_PATH + "/" + filename);
+        }
         if (!this.file.exists())
         {
             try {

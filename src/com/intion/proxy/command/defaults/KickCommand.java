@@ -5,6 +5,7 @@ import com.intion.proxy.Loader;
 import com.intion.proxy.Session;
 import com.intion.proxy.command.Command;
 import com.intion.proxy.utils.Logger;
+import com.intion.proxy.utils.LoggerEnum;
 
 import java.net.InetSocketAddress;
 import java.util.Arrays;
@@ -48,6 +49,6 @@ public class KickCommand extends Command {
                 return;
             }
         }
-        Logger.log("Not found " + playerName + ", try again.");
+        LoggerEnum.COMMAND.log("Not found " + playerName + ", try again.");
     }
 }

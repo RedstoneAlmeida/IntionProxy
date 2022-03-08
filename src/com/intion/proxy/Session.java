@@ -9,6 +9,7 @@ import com.intion.proxy.microplugin.PluginLoader;
 import com.intion.proxy.network.protocol.*;
 import com.intion.proxy.task.IntionTask;
 import com.intion.proxy.utils.Logger;
+import com.intion.proxy.utils.LoggerEnum;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
@@ -63,7 +64,7 @@ public class Session extends Thread {
     @Override
     public void run() {
         try {
-            Logger.log("Server connected with " + String.format("%s:%s | ID: %s", socket.getInetAddress().getHostAddress(), socket.getPort(), this.serverId));
+            LoggerEnum.INFO.log("Server connected with " + String.format("%s:%s | ID: %s", socket.getInetAddress().getHostAddress(), socket.getPort(), this.serverId));
             while (true)
             {
                 if (!socket.isConnected()) return;
@@ -152,11 +153,11 @@ public class Session extends Thread {
 
                 this.initialized = true;
 
-                Logger.log("ID: " + this.serverId + " -> fully connected, server name: " + this.name);
+                LoggerEnum.INFO.log(String.format("%s initialized with %s (%s/%s)", this.serverId, this.name, this.playerCount, this.maxPlayers));
                 break;
             case ProtocolInfo.INFORMATION_PACKET:
                 InformationPacket informationPacket = (InformationPacket) packet;
-                Logger.log(informationPacket.information);
+                LoggerEnum.PACKET.log(informationPacket.information);
                 break;
             case ProtocolInfo.SERVER_INFORMATION_PACKET:
                 ServerInformationPacket serverInformationPacket = (ServerInformationPacket) packet;
@@ -208,9 +209,9 @@ public class Session extends Thread {
                             }
                         }
                         if (this.initialized)
-                            Logger.log(String.format("%s connected to %s (%s)", playerDataPacket.username, this.serverId, this.getSessionName()));
+                            LoggerEnum.INFO.log(String.format("%s connected to %s (%s)", playerDataPacket.username, this.serverId, this.getSessionName()));
                         else
-                            Logger.log(String.format("%s connected to %s (Unknown)", playerDataPacket.username, this.serverId));
+                            LoggerEnum.INFO.log(String.format("%s connected to %s (Unknown)", playerDataPacket.username, this.serverId));
                         break;
                     case PlayerDataPacket.PlayerDataType.DISCONNECT:
                         if (this.players.containsKey(playerDataPacket.xuid))
@@ -221,7 +222,7 @@ public class Session extends Thread {
                             PlayerDisconnectEvent playerDisconnectEvent = new PlayerDisconnectEvent(this, player);
                             this.pluginLoader.getManager().callEvent(playerDisconnectEvent);
                         }
-                        Logger.log(String.format("%s disconnect from %s", playerDataPacket.username, this.serverId));
+                        LoggerEnum.INFO.log(String.format("%s disconnect from %s", playerDataPacket.username, this.serverId));
                         break;
                     case PlayerDataPacket.PlayerDataType.CHANGE_SERVER:
                         if (this.players.containsKey(playerDataPacket.xuid))
@@ -232,18 +233,16 @@ public class Session extends Thread {
                             PlayerTransferEvent playerTransferEvent = new PlayerTransferEvent(this, player);
                             this.pluginLoader.getManager().callEvent(playerTransferEvent);
                         }
-                        Logger.log(String.format("%s transferred from %s to %s", playerDataPacket.username, this.name,
+                        LoggerEnum.INFO.log(String.format("%s transferred from %s to %s", playerDataPacket.username, this.name,
                                 playerDataPacket.serverName));
                         break;
                 }
                 break;
             case ProtocolInfo.PING_PACKET:
                 PingPacket pingPacket = (PingPacket) packet;
-                if (pingPacket.type == PingPacket.SEND_PROXY) {
-                    long ms = pingPacket.sessionStamp - pingPacket.timeStamp;
-                    Logger.log(String.format("%s (%s) ping is %s ms",
-                            this.getSessionName(), this.getServerId(), ms));
-                }
+                long ms = System.currentTimeMillis() - pingPacket.timeStamp;
+                LoggerEnum.INFO.log(String.format("%s (%s) ping is %s ms",
+                        this.getSessionName(), this.getServerId(), ms));
                 break;
         }
     }
@@ -263,7 +262,7 @@ public class Session extends Thread {
         DisconnectPacket packet = new DisconnectPacket();
         packet.serverId = this.serverId;
         packet.reason = reason;
-        Logger.log(String.format("ID: %s disconnect from %s", this.serverId, reason));
+        LoggerEnum.INFO.log(String.format("ID: %s disconnect from %s", this.serverId, reason));
         if (send) {
             this.dataPacket(packet);
         }

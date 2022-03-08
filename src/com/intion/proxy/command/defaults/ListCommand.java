@@ -5,6 +5,7 @@ import com.intion.proxy.Session;
 import com.intion.proxy.command.Command;
 import com.intion.proxy.network.protocol.ListPacket;
 import com.intion.proxy.utils.Logger;
+import com.intion.proxy.utils.LoggerEnum;
 
 import java.util.Map;
 
@@ -43,13 +44,13 @@ public class ListCommand extends Command {
                     , session.getServerAddress().getPort()
                     , session.getPlayerCount()
                     , session.getMaxPlayers());
-            Logger.log(f);
+            LoggerEnum.COMMAND.log(f);
             players += session.getPlayerCount();
             maxPlayers += session.getMaxPlayers();
             values[i] = f;
             i++;
         }
-        Logger.log(String.format("%s players of %s total", players, maxPlayers));
+        LoggerEnum.COMMAND.log(String.format("%s players of %s total", players, maxPlayers));
         listPacket.list = values;
         server.dataPacket(listPacket);
     }

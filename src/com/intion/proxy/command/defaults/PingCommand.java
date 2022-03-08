@@ -6,6 +6,7 @@ import com.intion.proxy.Session;
 import com.intion.proxy.command.Command;
 import com.intion.proxy.network.protocol.PingPacket;
 import com.intion.proxy.utils.Logger;
+import com.intion.proxy.utils.LoggerEnum;
 
 import java.net.InetSocketAddress;
 
@@ -27,8 +28,8 @@ public class PingCommand extends Command {
             Logger.log("Server by " + serverName + " is not found");
             return;
         }
-        server.dataPacket(PingPacket.create(System.currentTimeMillis(), 0, PingPacket.SEND_SESSION));
-        Logger.log("Requesting information from " + server.getSessionName());
+        server.dataPacket(PingPacket.create(0));
+        LoggerEnum.COMMAND.log("Requesting information from " + server.getSessionName());
     }
 
 }

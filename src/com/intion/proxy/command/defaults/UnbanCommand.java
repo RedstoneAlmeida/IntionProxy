@@ -4,6 +4,7 @@ import com.intion.proxy.Loader;
 import com.intion.proxy.command.Command;
 import com.intion.proxy.utils.IntionConfig;
 import com.intion.proxy.utils.Logger;
+import com.intion.proxy.utils.LoggerEnum;
 
 public class UnbanCommand extends Command {
 
@@ -33,10 +34,10 @@ public class UnbanCommand extends Command {
             this.config.remove(xuid);
             this.config.remove(playerName);
             this.config.save();
-            Logger.log(playerName + " is unbanned");
+            LoggerEnum.COMMAND.log(playerName + " is unbanned");
             return;
         }
-        Logger.log("Not found " + playerName + ", try again.");
+        LoggerEnum.COMMAND.log("Not found " + playerName + ", try again.");
     }
 
 }

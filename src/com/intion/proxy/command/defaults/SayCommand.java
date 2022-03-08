@@ -5,6 +5,7 @@ import com.intion.proxy.Session;
 import com.intion.proxy.command.Command;
 import com.intion.proxy.network.protocol.CommandPacket;
 import com.intion.proxy.utils.Logger;
+import com.intion.proxy.utils.LoggerEnum;
 
 public class SayCommand extends Command {
 
@@ -27,6 +28,6 @@ public class SayCommand extends Command {
         {
             session.dataPacket(pk);
         }
-        Logger.log(pk.command.replace("say ", ""));
+        LoggerEnum.COMMAND.log(pk.command.replace("say ", ""));
     }
 }

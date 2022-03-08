@@ -1,9 +1,12 @@
 package com.intion.proxy;
 
+import com.intion.proxy.event.session.player.PlayerKickEvent;
 import com.intion.proxy.network.protocol.PlayerClosePacket;
+import com.intion.proxy.network.protocol.PlayerMessagePacket;
 import com.intion.proxy.network.protocol.TransferPacket;
 import com.intion.proxy.utils.IntionConfig;
 import com.intion.proxy.utils.Logger;
+import com.intion.proxy.utils.LoggerEnum;
 
 import java.net.InetSocketAddress;
 
@@ -49,9 +52,15 @@ public class IntionPlayer {
 
     public void close(String reason)
     {
-        Logger.log(String.format("[%s] %s disconnected, reason %s",
+        int type = PlayerKickEvent.OTHER;
+        if (this.isBanned())
+            type = PlayerKickEvent.BANNED;
+        PlayerKickEvent event = new PlayerKickEvent(this.session, this, type, reason);
+        this.session.getLoader().getPluginLoader().getManager().callEvent(event);
+
+        LoggerEnum.INFO.log(String.format("[%s] %s disconnected, reason %s",
                 this.session.getSessionName(),
-                this.username, reason));
+                this.username, event.getReason()));
         this.session.dataPacket(PlayerClosePacket.create(this.username, reason));
     }
 
@@ -62,5 +71,25 @@ public class IntionPlayer {
         if (this.config.exist(this.getXuid()))
             return true;
         return false;
+    }
+
+    public void sendMessage(String message)
+    {
+        this.session.dataPacket(PlayerMessagePacket.create(this.username, message));
+    }
+
+    public void sendTitle(String message)
+    {
+        this.session.dataPacket(PlayerMessagePacket.create(this.username, message, PlayerMessagePacket.TYPE_TITLE));
+    }
+
+    public void sendTip(String message)
+    {
+        this.session.dataPacket(PlayerMessagePacket.create(this.username, message, PlayerMessagePacket.TYPE_TIP));
+    }
+
+    public void sendActionBar(String message)
+    {
+        this.session.dataPacket(PlayerMessagePacket.create(this.username, message, PlayerMessagePacket.TYPE_ACTION_BAR));
     }
 }

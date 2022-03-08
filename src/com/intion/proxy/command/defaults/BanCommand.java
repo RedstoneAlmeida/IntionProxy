@@ -6,6 +6,7 @@ import com.intion.proxy.Session;
 import com.intion.proxy.command.Command;
 import com.intion.proxy.utils.IntionConfig;
 import com.intion.proxy.utils.Logger;
+import com.intion.proxy.utils.LoggerEnum;
 
 import java.util.Arrays;
 
@@ -58,6 +59,6 @@ public class BanCommand extends Command {
                 return;
             }
         }
-        Logger.log("Not found " + playerName + ", try again.");
+        LoggerEnum.COMMAND.log("Not found " + playerName + ", try again.");
     }
 }

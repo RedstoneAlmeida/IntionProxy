@@ -5,6 +5,7 @@ import com.intion.proxy.Loader;
 import com.intion.proxy.Session;
 import com.intion.proxy.command.Command;
 import com.intion.proxy.utils.Logger;
+import com.intion.proxy.utils.LoggerEnum;
 
 import java.net.InetSocketAddress;
 
@@ -23,7 +24,7 @@ public class TransferCommand extends Command {
         Session server = loader.getSessionByName(serverName);
         if (server == null)
         {
-            Logger.log("Server by " + serverName + " is not found");
+            LoggerEnum.COMMAND.log("Server by " + serverName + " is not found");
             return;
         }
         try {
@@ -41,7 +42,7 @@ public class TransferCommand extends Command {
                     return;
                 }
             }
-            Logger.log("Not found " + playerName + " in server list");
+            LoggerEnum.COMMAND.log("Not found " + playerName + " in server list");
         } catch (Exception e)
         {
             e.printStackTrace();

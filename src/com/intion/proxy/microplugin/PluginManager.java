@@ -5,6 +5,7 @@ import com.intion.proxy.command.Command;
 import com.intion.proxy.event.ProxyEvent;
 import com.intion.proxy.event.session.SessionInitializeEvent;
 import com.intion.proxy.task.IntionTask;
+import com.intion.proxy.utils.IntionConfig;
 import com.intion.proxy.utils.Logger;
 
 public class PluginManager {
@@ -41,6 +42,11 @@ public class PluginManager {
     {
         PluginTask task = new PluginTask(this.getPlugin().getScheduler(), function, this.entry);
         this.plugin.getScheduler().addTask(task, delay, repeat);
+    }
+
+    public IntionConfig createConfig(String filename)
+    {
+        return new IntionConfig(filename, true);
     }
 
     public void callEvent(ProxyEvent event)

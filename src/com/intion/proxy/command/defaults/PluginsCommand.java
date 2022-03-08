@@ -4,6 +4,7 @@ import com.intion.proxy.Loader;
 import com.intion.proxy.command.Command;
 import com.intion.proxy.microplugin.PluginLoader;
 import com.intion.proxy.utils.Logger;
+import com.intion.proxy.utils.LoggerEnum;
 
 public class PluginsCommand extends Command {
 
@@ -19,7 +20,7 @@ public class PluginsCommand extends Command {
         {
             builder.append(String.format("%s v%s", entry.getName(), entry.getVersion())).append(" | ");
         }
-        Logger.log(builder.toString());
+        LoggerEnum.COMMAND.log(builder.toString());
     }
 
 

@@ -2,6 +2,7 @@ package com.intion.proxy.microplugin;
 
 import com.intion.proxy.Loader;
 import com.intion.proxy.utils.Logger;
+import com.intion.proxy.utils.LoggerEnum;
 
 import javax.script.*;
 import java.io.*;
@@ -140,7 +141,7 @@ public class PluginLoader {
             }
             this.ready = true;
 
-            Logger.log("Loaded plugin " + this.name);
+            LoggerEnum.INFO.log("Loaded plugin " + this.name);
             this.call("onEnable");
         }
 
@@ -155,7 +156,7 @@ public class PluginLoader {
             try {
                 return ((Invocable) engine).invokeFunction(functionName, args);
             } catch (final Exception se) {
-                Logger.log("Error while calling " + functionName, se);
+                LoggerEnum.ERROR.log("Error while calling " + functionName, se);
                 se.printStackTrace();
             }
             return null;

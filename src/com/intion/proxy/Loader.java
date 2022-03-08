@@ -14,6 +14,7 @@ import com.intion.proxy.task.IntionTask;
 import com.intion.proxy.task.Scheduler;
 import com.intion.proxy.utils.IntionConfig;
 import com.intion.proxy.utils.Logger;
+import com.intion.proxy.utils.LoggerEnum;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -51,7 +52,7 @@ public class Loader {
     /**
      * Connection
      */
-    private final short port;
+    private short port;
 
     private final Map<Long, Session> sessions = new HashMap<>();
 
@@ -68,7 +69,7 @@ public class Loader {
     public void start()
     {
         Thread.currentThread().setName("Server Thread");
-        Logger.log("Loading....");
+        LoggerEnum.INFO.log("Loading....");
         new File(PLUGIN_PATH).mkdir();
         try {
             this.config = new IntionConfig("proxy.properties");
@@ -77,17 +78,19 @@ public class Loader {
             else
             {
                 this.config.put("server-password", "Intion@123");
+                this.config.put("server-port", 25567);
                 this.config.save();
                 this.token = "Intion@123";
             }
+            this.port = Short.parseShort((String) this.config.get("server-port"));
             this.banConfig = new IntionConfig("bans.properties");
             ServerSocket socket = new ServerSocket();
             socket.bind(new InetSocketAddress("0.0.0.0", this.port));
             this.network = new Network();
             this.scheduler = new Scheduler(this);
             this.scheduler.init();
-            Logger.log("Starting Server...");
-            Logger.log(String.format("Address: %s | port: %s", socket.getInetAddress().getHostAddress(), this.port));
+            LoggerEnum.INFO.log("Starting Server...");
+            LoggerEnum.INFO.log(String.format("Address: %s | port: %s", socket.getInetAddress().getHostAddress(), this.port));
             this.commandMap = new CommandMap(this);
             this.registerCommands();
             this.pluginLoader = new PluginLoader(this);

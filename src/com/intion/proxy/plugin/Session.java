@@ -193,18 +193,11 @@ public class Session extends Thread {
                 playerDataPacket.username = player.getName();
                 playerDataPacket.xuid = player.getUniqueId().toString();
                 playerDataPacket.type = PlayerDataPacket.PlayerDataType.CHANGE_SERVER;
-                this.sendPacket(playerDataPacket);
+                this.sendPacket(playerDataPacket, true);
                 player.transfer(transferPacket.address);
                 break;
             case ProtocolInfo.PING_PACKET:
-                PingPacket pingPacket = (PingPacket) packet;
-                if (pingPacket.type == PingPacket.SEND_SESSION)
-                {
-                    this.sendPacket(
-                            PingPacket.create(pingPacket.timeStamp, System.currentTimeMillis(), PingPacket.SEND_PROXY),
-                            true
-                    );
-                }
+                this.sendPacket(PingPacket.create(System.currentTimeMillis()), true);
                 break;
             case ProtocolInfo.PLAYER_CLOSE_PACKET:
                 PlayerClosePacket playerClosePacket = (PlayerClosePacket) packet;
@@ -215,6 +208,28 @@ public class Session extends Thread {
                     cn.nukkit.network.protocol.DisconnectPacket dc = new cn.nukkit.network.protocol.DisconnectPacket();
                     dc.message = reason;
                     p.dataPacket(dc);
+                }
+                break;
+            case ProtocolInfo.PLAYER_MESSAGE_PACKET:
+                PlayerMessagePacket playerMessagePacket = (PlayerMessagePacket) packet;
+                Player playerMessage = this.loader.getServer().getPlayer(playerMessagePacket.playerName);
+                if (playerMessage != null)
+                {
+                    switch (playerMessagePacket.type)
+                    {
+                        case PlayerMessagePacket.TYPE_CHAT:
+                            playerMessage.sendMessage(playerMessagePacket.message);
+                            break;
+                        case PlayerMessagePacket.TYPE_TITLE:
+                            playerMessage.sendTitle(playerMessagePacket.message);
+                            break;
+                        case PlayerMessagePacket.TYPE_TIP:
+                            playerMessage.sendTip(playerMessagePacket.message);
+                            break;
+                        case PlayerMessagePacket.TYPE_ACTION_BAR:
+                            playerMessage.sendActionBar(playerMessagePacket.message);
+                            break;
+                    }
                 }
                 break;
         }

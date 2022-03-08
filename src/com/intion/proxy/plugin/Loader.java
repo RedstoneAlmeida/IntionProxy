@@ -42,7 +42,7 @@ public class Loader extends PluginBase implements Listener {
         packet.xuid = player.getLoginChainData().getXUID();
         packet.username = player.getName();
         packet.serverName = this.getConfig().getString("name", "Unknown");
-        this.session.sendPacket(packet);
+        this.session.sendPacket(packet, true);
     }
 
     @EventHandler
@@ -54,7 +54,7 @@ public class Loader extends PluginBase implements Listener {
         packet.xuid = player.getLoginChainData().getXUID();
         packet.username = player.getName();
         packet.serverName = this.getConfig().getString("name", "Unknown");
-        this.session.sendPacket(packet);
+        this.session.sendPacket(packet, true);
     }
 
     public Session getSession() {
