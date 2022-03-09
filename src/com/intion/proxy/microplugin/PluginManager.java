@@ -54,6 +54,11 @@ public class PluginManager {
         this.plugin.getPluginLoader().call(event.getClass().getSimpleName(), event);
     }
 
+    public void cantest(Object obj)
+    {
+
+    }
+
     public Loader getPlugin() {
         return plugin;
     }

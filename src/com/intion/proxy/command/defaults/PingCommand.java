@@ -28,7 +28,7 @@ public class PingCommand extends Command {
             Logger.log("Server by " + serverName + " is not found");
             return;
         }
-        server.dataPacket(PingPacket.create(0));
+        server.sendPing();
         LoggerEnum.COMMAND.log("Requesting information from " + server.getSessionName());
     }
 

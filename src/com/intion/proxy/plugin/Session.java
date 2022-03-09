@@ -197,7 +197,7 @@ public class Session extends Thread {
                 player.transfer(transferPacket.address);
                 break;
             case ProtocolInfo.PING_PACKET:
-                this.sendPacket(PingPacket.create(System.currentTimeMillis()), true);
+                this.sendPacket(PongPacket.create(), true);
                 break;
             case ProtocolInfo.PLAYER_CLOSE_PACKET:
                 PlayerClosePacket playerClosePacket = (PlayerClosePacket) packet;

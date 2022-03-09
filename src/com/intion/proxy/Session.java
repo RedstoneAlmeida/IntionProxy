@@ -38,6 +38,8 @@ public class Session extends Thread {
 
     private Map<String, IntionPlayer> players = new HashMap<>();
 
+    private long lastStamp = 0;
+
     public Session(Loader loader, Socket socket)
     {
         this.loader = loader;
@@ -238,13 +240,18 @@ public class Session extends Thread {
                         break;
                 }
                 break;
-            case ProtocolInfo.PING_PACKET:
-                PingPacket pingPacket = (PingPacket) packet;
-                long ms = System.currentTimeMillis() - pingPacket.timeStamp;
+            case ProtocolInfo.PONG_PACKET:
+                long diff = System.currentTimeMillis() - this.lastStamp;
                 LoggerEnum.INFO.log(String.format("%s (%s) ping is %s ms",
-                        this.getSessionName(), this.getServerId(), ms));
+                        this.getSessionName(), this.getServerId(), diff));
                 break;
         }
+    }
+
+    public void sendPing()
+    {
+        this.lastStamp = System.currentTimeMillis();
+        this.dataPacket(PingPacket.create());
     }
 
     public void disconnect()

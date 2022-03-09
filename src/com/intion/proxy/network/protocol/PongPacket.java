@@ -1,8 +1,8 @@
 package com.intion.proxy.network.protocol;
 
-public class PingPacket extends DataPacket {
+public class PongPacket extends DataPacket {
 
-    public static byte NETWORK_ID = ProtocolInfo.PING_PACKET;
+    public static byte NETWORK_ID = ProtocolInfo.PONG_PACKET;
 
     @Override
     public byte pid() {
@@ -19,8 +19,8 @@ public class PingPacket extends DataPacket {
 
     }
 
-    public static PingPacket create()
+    public static PongPacket create()
     {
-        return new PingPacket();
+        return new PongPacket();
     }
 }
